@@ -65,11 +65,38 @@ public class JangArrayList implements List<Integer> {
 
     @Override
     public boolean add(Integer integer) {
-        resizeIfNecessary();
+        resizeIfNecessary(1);
 
         arr[currentIndex] = integer;
         currentIndex++;
         return true;
+    }
+
+    // Probably can use your addAll method
+    @Override
+    public void add(int index, Integer element) {
+        if (index > currentIndex) {
+            throw new IndexOutOfBoundsException(index);
+        }
+
+        else {
+            resizeIfNecessary(1);
+            Integer[] temp = new Integer[currentIndex - index];
+            int j = 0;
+            for (int i = index; i < currentIndex; i++) {
+                temp[j] = arr[i];
+                j++;
+            }
+
+            currentIndex = index;
+
+            add(element);
+
+            for (int i = 0; i < temp.length; i++) {
+                add(temp[i]);
+            }
+
+        }
     }
 
     @Override
@@ -94,7 +121,7 @@ public class JangArrayList implements List<Integer> {
 
     @Override
     public boolean addAll(Collection<? extends Integer> c) {
-        resizeIfNecessary();
+        resizeIfNecessary(c.size());
 
         for (Integer i : c) {
             add(i);
@@ -105,7 +132,7 @@ public class JangArrayList implements List<Integer> {
 
     @Override
     public boolean addAll(int index, Collection<? extends Integer> c) {
-        resizeIfNecessary();
+        resizeIfNecessary(c.size());
         int thisIndex = index;
         for (Integer i : c) {
             add(thisIndex, i);
@@ -176,31 +203,7 @@ public class JangArrayList implements List<Integer> {
         return null;
     }
 
-    // Probably can use your addAll method
-    @Override
-    public void add(int index, Integer element) {
-        if (index > currentIndex) {
-            throw new IndexOutOfBoundsException(index);
-        }
 
-        else {
-            Integer[] temp = new Integer[currentIndex - index];
-            int j = 0;
-            for (int i = index; i < currentIndex; i++) {
-                temp[j] = arr[i];
-                j++;
-            }
-
-            currentIndex = index;
-
-            add(element);
-
-            for (int i = 0; i < temp.length; i++) {
-                add(temp[i]);
-            }
-
-        }
-    }
 
     @Override
     public Integer remove(int index) {
@@ -278,12 +281,21 @@ public class JangArrayList implements List<Integer> {
         return temp;
     }
 
-    private void resizeIfNecessary() {
-        if (currentIndex >= arr.length) {
-            Integer[] newArr = new Integer[arr.length * 2];
-            for (int i = 0; i < arr.length; i++) {
+    private void resizeIfNecessary(int size) {
+        int neededSize = currentIndex + size;
+        int newSize = arr.length;
+
+        if (neededSize > arr.length) {
+            while (newSize < neededSize ) {
+                newSize *= 2;
+            }
+
+            Integer[] newArr = new Integer[newSize];
+
+            for (int i = 0; i < currentIndex; i++) {
                 newArr[i] = arr[i];
             }
+
             arr = newArr;
         }
     }
